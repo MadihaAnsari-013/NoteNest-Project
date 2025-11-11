@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Favicon – put favicon.svg in public/ -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NoteKeeper</title>
+
+    <!-- === CUSTOM CURSOR STYLES === -->
+    <style>
+      /* Hide default cursor */
+      * {
+        cursor: none !important;
+      }
+
+      .custom-cursor {
+        width: 24px;
+        height: 24px;
+        background: radial-gradient(circle, #8b5cf6 0%, transparent 70%);
+        border-radius: 50%;
+        position: fixed;
+        pointer-events: none;
+        z-index: 9999;
+        mix-blend-mode: screen;
+        animation: cursorGlow 1.5s ease-in-out infinite alternate;
+        transition: transform 0.08s ease-out;
+        left: 0;
+        top: 0;
+        transform: translate(-50%, -50%);
+      }
+
+      @keyframes cursorGlow {
+        0% {
+          box-shadow: 0 0 12px #8b5cf6, 0 0 20px #8b5cf6;
+        }
+        100% {
+          box-shadow: 0 0 20px #8b5cf6, 0 0 30px #8b5cf6, 0 0 40px #06b6d4;
+        }
+      }
+
+      /* Optional: Hover effect on buttons */
+      button, a, [role="button"] {
+        transition: transform 0.2s;
+      }
+      button:hover, a:hover {
+        transform: scale(1.05);
+      }
+    </style>
+  </head>
+
+  <body class="bg-gradient-to-br from-purple-900 via-blue-900 to-teal-900 text-white">
+    <!-- Custom Cursor Dot -->
+    <div class="custom-cursor"></div>
+
+    <!-- React Root -->
+    <div id="root"></div>
+
+    <!-- Vite Entry -->
+    <script type="module" src="/src/main.jsx"></script>
+
+    <!-- === CUSTOM CURSOR SCRIPT === -->
+    <script>
+      // Only run in browser
+      if (typeof window !== 'undefined') {
+        const cursor = document.querySelector('.custom-cursor');
+        let mouseX = 0;
+        let mouseY = 0;
+        let cursorX = 0;
+        let cursorY = 0;
+        const speed = 0.2; // Smoothness
+
+        const animate = () => {
+          // Smooth follow
+          const distX = mouseX - cursorX;
+          const distY = mouseY - cursorY;
+          cursorX += distX * speed;
+          cursorY += distY * speed;
+
+          cursor.style.left = cursorX + 'px';
+          cursor.style.top = cursorY + 'px';
+
+          requestAnimationFrame(animate);
+        };
+
+        document.addEventListener('mousemove', (e) => {
+          mouseX = e.clientX;
+          mouseY = e.clientY;
+        });
+
+        // Start animation
+        animate();
+      }
+    </script>
+  </body>
+</html>
