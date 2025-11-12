@@ -2,10 +2,11 @@
 import { motion } from "framer-motion";
 import { useContext, useState } from "react";
 import { NoteContext } from "../context/NoteContext";
-import { Edit2, Trash2, Save, X } from "lucide-react";
+import { Edit2, Trash2, Save, X, Mail, Download } from "lucide-react";
 import confetti from "canvas-confetti";
+import html2pdf from "html2pdf.js";
 
-export default function Notecard({ note }) {
+export default function Notecard({ note, onShare }) {
   const { deleteNote, updateNote } = useContext(NoteContext);
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({ title: note.title, content: note.content });
@@ -21,6 +22,28 @@ export default function Notecard({ note }) {
     });
   };
 
+  const exportToPDF = () => {
+    const element = document.createElement("div");
+    element.innerHTML = `
+      <div style="padding: 40px; font-family: Arial, sans-serif; background: white; color: black;">
+        <h1 style="color: #8b5cf6; margin-bottom: 20px; font-size: 28px;">${note.title}</h1>
+        <p style="white-space: pre-wrap; line-height: 1.8; font-size: 16px;">${note.content}</p>
+        <hr style="margin: 30px 0; border: 1px solid #eee;">
+        <p style="color: #999; font-size: 12px;">Exported from <strong>NoteNest</strong> • ${new Date().toLocaleDateString()}</p>
+      </div>
+    `;
+
+    html2pdf()
+      .set({
+        margin: 1,
+        filename: `${note.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`,
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: "in", format: "letter", orientation: "portrait" }
+      })
+      .from(element)
+      .save();
+  };
+
   return (
     <motion.div
       whileHover={{ scale: 1.05, rotate: 1 }}
@@ -29,7 +52,6 @@ export default function Notecard({ note }) {
     >
       <div className="bg-glass backdrop-blur-xl border border-white/20 rounded-2xl p-6 shadow-2xl hover:shadow-purple-500/50 transition-all duration-300">
         {isEditing ? (
-          // Edit mode...
           <div className="space-y-4">
             <input
               type="text"
@@ -64,12 +86,28 @@ export default function Notecard({ note }) {
                 <button
                   onClick={() => setIsEditing(true)}
                   className="p-2 bg-purple-500/20 hover:bg-purple-500/40 rounded-lg"
+                  title="Edit"
                 >
                   <Edit2 size={16} className="text-purple-400" />
                 </button>
                 <button
+                  onClick={() => onShare(note._id)}
+                  className="p-2 bg-blue-500/20 hover:bg-blue-500/40 rounded-lg"
+                  title="Share via Email"
+                >
+                  <Mail size={16} className="text-blue-400" />
+                </button>
+                <button
+                  onClick={exportToPDF}
+                  className="p-2 bg-green-500/20 hover:bg-green-500/40 rounded-lg"
+                  title="Export to PDF"
+                >
+                  <Download size={16} className="text-green-400" />
+                </button>
+                <button
                   onClick={() => deleteNote(note._id)}
                   className="p-2 bg-red-500/20 hover:bg-red-500/40 rounded-lg"
+                  title="Delete"
                 >
                   <Trash2 size={16} className="text-red-400" />
                 </button>
