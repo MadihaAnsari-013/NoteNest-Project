@@ -7,58 +7,76 @@ export const NoteContext = createContext();
 export function NoteProvider({ children }) {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [darkMode, setDarkMode] = useState(true);
 
-  // ---------- FETCH ----------
-  const getNotes = async () => {
+  const fetchNotes = async () => {
     setLoading(true);
     try {
-      const { data } = await BACKEND_URL.get("/get-notes");
-      setNotes(data);
+      const res = await BACKEND_URL.get("/get-notes");
+      setNotes(res.data);
     } catch (error) {
-      console.error("Error fetching notes:", error);
+      console.error("Failed to fetch notes:", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    getNotes();
+    fetchNotes();
   }, []);
 
-  // ---------- CREATE ----------
-  const createNote = async (note) => {
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", darkMode);
+  }, [darkMode]);
+
+  const addNote = async (note) => {
     try {
-      const { data } = await BACKEND_URL.post("/create-note", note);
-      setNotes((prev) => [data, ...prev]);
+      const res = await BACKEND_URL.post("/create-note", note);
+      setNotes([res.data, ...notes]);
     } catch (error) {
-      console.error("Create error:", error);
+      console.error("Add note failed:", error);
     }
   };
 
-  // ---------- UPDATE ----------
-  const updateNote = async (id, updated) => {
+  const updateNote = async (id, updates) => {
     try {
-      const { data } = await BACKEND_URL.put(`/update-note/${id}`, updated);
-      setNotes((prev) => prev.map((n) => (n._id === id ? data : n)));
+      const res = await BACKEND_URL.put(`/update-note/${id}`, updates);
+      setNotes(notes.map(n => n._id === id ? res.data : n));
     } catch (error) {
-      console.error("Update error:", error);
+      console.error("Update failed:", error);
     }
   };
 
-  // ---------- DELETE ----------
   const deleteNote = async (id) => {
     try {
       await BACKEND_URL.delete(`/delete-note/${id}`);
-      setNotes((prev) => prev.filter((n) => n._id !== id));
+      setNotes(notes.filter(n => n._id !== id));
     } catch (error) {
-      console.error("Delete error:", error);
+      console.error("Delete failed:", error);
+    }
+  };
+
+  const togglePin = async (id, currentPinned) => {
+    try {
+      await BACKEND_URL.patch(`/pin-note/${id}`, { pinned: !currentPinned });
+      setNotes(notes.map(n => n._id === id ? { ...n, pinned: !currentPinned } : n));
+    } catch (error) {
+      console.error("Pin toggle failed:", error);
     }
   };
 
   return (
-    <NoteContext.Provider
-      value={{ notes, loading, createNote, updateNote, deleteNote }}
-    >
+    <NoteContext.Provider value={{
+      notes,
+      loading,
+      darkMode,
+      setDarkMode,
+      addNote,
+      updateNote,
+      deleteNote,
+      togglePin,
+      fetchNotes   // THIS IS NOW INCLUDED!
+    }}>
       {children}
     </NoteContext.Provider>
   );

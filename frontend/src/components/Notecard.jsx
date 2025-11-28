@@ -6,6 +6,7 @@ import { Edit2, Trash2, Save, X, Mail, Download } from "lucide-react";
 import confetti from "canvas-confetti";
 import html2pdf from "html2pdf.js";
 
+
 export default function Notecard({ note, onShare }) {
   const { deleteNote, updateNote } = useContext(NoteContext);
   const [isEditing, setIsEditing] = useState(false);

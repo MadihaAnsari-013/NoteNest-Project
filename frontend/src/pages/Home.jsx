@@ -3,21 +3,21 @@ import { useContext, useState } from "react";
 import { NoteContext } from "../context/NoteContext";
 import Notecard from "../components/Notecard";
 import { motion } from "framer-motion";
-import { FileText, Mail, X } from "lucide-react";
+import { FileText, Mail, X, Plus } from "lucide-react";
 import BACKEND_URL from "../api/url";
 
 export default function Home() {
   const { notes, loading } = useContext(NoteContext);
 
-  // SHARE MODAL STATE
+  // Share Modal State
   const [shareModal, setShareModal] = useState(false);
   const [shareEmail, setShareEmail] = useState("");
   const [shareNoteId, setShareNoteId] = useState("");
 
-  // SEARCH STATE
+  // Search State
   const [search, setSearch] = useState("");
 
-  // SHARE HANDLER
+  // Share Handler
   const handleShare = (id) => {
     setShareNoteId(id);
     setShareEmail("");
@@ -29,7 +29,6 @@ export default function Home() {
       alert("Please enter a valid email");
       return;
     }
-
     try {
       await BACKEND_URL.post(`/share/${shareNoteId}`, { email: shareEmail });
       alert("Note shared successfully!");
@@ -41,7 +40,7 @@ export default function Home() {
     }
   };
 
-  // HELPER: Check if two dates are the same day
+  // Check if same day
   const isSameDay = (d1, d2) => {
     return (
       d1.getFullYear() === d2.getFullYear() &&
@@ -50,7 +49,7 @@ export default function Home() {
     );
   };
 
-  // GROUP NOTES BY DATE
+  // Group notes by date
   const groupNotesByDate = (notes) => {
     const groups = {};
     const today = new Date();
@@ -61,17 +60,14 @@ export default function Home() {
       const noteDate = new Date(note.createdAt);
       let key;
 
-      if (isSameDay(noteDate, today)) {
-        key = "Today";
-      } else if (isSameDay(noteDate, yesterday)) {
-        key = "Yesterday";
-      } else {
+      if (isSameDay(noteDate, today)) key = "Today";
+      else if (isSameDay(noteDate, yesterday)) key = "Yesterday";
+      else
         key = noteDate.toLocaleDateString("en-US", {
           month: "long",
           day: "numeric",
           year: "numeric",
         });
-      }
 
       if (!groups[key]) groups[key] = [];
       groups[key].push(note);
@@ -80,47 +76,53 @@ export default function Home() {
     return groups;
   };
 
-  // FILTER NOTES BY SEARCH
-  const filteredNotes = notes.filter(note =>
-    note.title.toLowerCase().includes(search.toLowerCase()) ||
-    note.content.toLowerCase().includes(search.toLowerCase())
+  // Filter notes by search
+  const filteredNotes = notes.filter(
+    (note) =>
+      note.title.toLowerCase().includes(search.toLowerCase()) ||
+      note.content.toLowerCase().includes(search.toLowerCase())
   );
 
+  // Loading State
   if (loading) {
     return (
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4">
-        {[...Array(6)].map((_, i) => (
-          <div key={i} className="bg-white/10 backdrop-blur-md rounded-2xl p-5 animate-pulse">
-            <div className="h-6 bg-white/20 rounded mb-3"></div>
-            <div className="h-4 bg-white/20 rounded w-3/4 mb-2"></div>
-            <div className="h-4 bg-white/20 rounded w-1/2"></div>
+      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-8">
+        {[...Array(8)].map((_, i) => (
+          <div
+            key={i}
+            className="bg-white/10 backdrop-blur-md rounded-2xl p-6 animate-pulse"
+          >
+            <div className="h-7 bg-white/20 rounded mb-4"></div>
+            <div className="h-4 bg-white/20 rounded w-5/6 mb-2"></div>
+            <div className="h-4 bg-white/20 rounded w-3/4"></div>
           </div>
         ))}
       </div>
     );
   }
 
+  // Empty State
   if (notes.length === 0) {
     return (
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="flex flex-col items-center justify-center min-h-screen text-center p-6"
+        className="flex flex-col items-center justify-center min-h-screen text-center px-6"
       >
         <motion.div
-          animate={{ y: [0, -10, 0] }}
+          animate={{ y: [0, -15, 0] }}
           transition={{ repeat: Infinity, duration: 2 }}
-          className="mb-6"
+          className="mb-8"
         >
-          <FileText size={80} className="text-blue-400" />
+          <FileText size={100} className="text-blue-400" />
         </motion.div>
-        <h3 className="text-2xl font-bold text-white mb-2">No Notes Yet</h3>
-        <p className="text-gray-400 mb-6">Start by creating your first note!</p>
+        <h2 className="text-4xl font-bold text-white mb-4">Welcome to NoteNest</h2>
+        <p className="text-xl text-gray-300 mb-8">Your notes live here. Start creating!</p>
         <a
           href="/create"
-          className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl text-white font-medium transition"
+          className="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-lg font-semibold rounded-2xl shadow-xl hover:shadow-purple-500/50 transform hover:scale-105 transition"
         >
-          Create Note
+          Create Your First Note
         </a>
       </motion.div>
     );
@@ -128,49 +130,51 @@ export default function Home() {
 
   return (
     <>
-      {/* SEARCH BAR */}
-      <div className="p-4 max-w-2xl mx-auto">
+      {/* Search Bar */}
+      <div className="p-6 max-w-3xl mx-auto">
         <div className="relative">
           <input
             type="text"
-            placeholder="Search notes by title or content..."
+            placeholder="Search your notes..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full p-4 pr-12 rounded-2xl bg-white/10 backdrop-blur-xl 
-                       border border-white/20 text-white placeholder-white/50 
-                       focus:outline-none focus:ring-2 focus:ring-purple-500 
-                       transition-all duration-300"
+            className="w-full p-4 pr-14 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-4 focus:ring-purple-500/50 transition"
           />
           <svg
-            className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 text-white/60"
+            className="absolute right-5 top-1/2 -translate-y-1/2 w-7 h-7 text-white/60"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
           </svg>
         </div>
       </div>
 
-      {/* GROUPED NOTES BY DATE */}
-      <div className="p-4 space-y-8">
+      {/* Notes Grid with Date Grouping */}
+      <div className="px-6 pb-24">
         {Object.entries(groupNotesByDate(filteredNotes)).map(([date, dateNotes]) => (
-          <div key={date} className="space-y-4">
-            {/* Date Label */}
-            <h2 className="text-lg font-semibold text-purple-400 dark:text-purple-300 
-                           px-2 border-l-4 border-purple-500">
-              {date} {search && `(${dateNotes.length} found)`}
+          <div key={date} className="mb-12">
+            <h2 className="text-2xl font-bold text-purple-400 mb-6 px-2 border-l-4 border-purple-500">
+              {date}
+              {search && (
+                <span className="text-lg font-normal text-gray-400 ml-3">
+                  ({dateNotes.length} found)
+                </span>
+              )}
             </h2>
-
-            {/* Notes Grid */}
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {dateNotes.map((note, i) => (
                 <motion.div
                   key={note._id}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05 }}
+                  transition={{ delay: i * 0.07 }}
                 >
                   <Notecard note={note} onShare={handleShare} />
                 </motion.div>
@@ -179,55 +183,62 @@ export default function Home() {
           </div>
         ))}
 
-        {/* NO RESULTS */}
-        {search && Object.keys(groupNotesByDate(filteredNotes)).length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-400 text-lg">
-              No notes found for "<span className="text-purple-400">{search}</span>"
+        {/* No Search No Results */}
+        {search && filteredNotes.length === 0 && (
+          <div className="text-center py-20">
+            <p className="text-2xl text-gray-400">
+              No notes found for "
+              <span className="text-purple-400 font-bold">{search}</span>"
             </p>
+            <p className="text-gray-500 mt-4">Try searching something else</p>
           </div>
         )}
       </div>
 
+      {/* FLOATING ADD BUTTON - THIS IS WHAT YOU WERE MISSING */}
+      <div className="fixed bottom-8 right-8 z-50">
+        <a
+          href="/create"
+          className="group flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full shadow-2xl hover:shadow-pink-500/60 transform hover:scale-110 transition-all duration-300"
+        >
+          <Plus className="w-9 h-9 text-white group-hover:rotate-90 transition-transform duration-500" />
+        </a>
+      </div>
+
       {/* Share Modal */}
       {shareModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-2xl w-full max-w-md"
+            className="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-2xl w-full max-w-md"
           >
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold flex items-center gap-2 text-gray-800 dark:text-white">
-                <Mail className="w-6 h-6 text-purple-500" />
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-2xl font-bold flex items-center gap-3 text-gray-800 dark:text-white">
+                <Mail className="w-8 h-8 text-purple-500" />
                 Share Note
               </h3>
               <button
                 onClick={() => setShareModal(false)}
-                className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition"
+                className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition"
               >
-                <X className="w-5 h-5" />
+                <X className="w-6 h-6" />
               </button>
             </div>
 
             <input
               type="email"
-              placeholder="student@example.com"
+              placeholder="friend@example.com"
               value={shareEmail}
               onChange={(e) => setShareEmail(e.target.value)}
-              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg mb-4 
-                         bg-white dark:bg-gray-700 
-                         text-gray-900 dark:text-white 
-                         placeholder-gray-500 dark:placeholder-gray-400 
-                         focus:ring-2 focus:ring-purple-500 focus:outline-none"
+              className="w-full px-5 py-4 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 focus:ring-4 focus:ring-purple-500 focus:outline-none mb-6 text-lg"
             />
 
             <button
               onClick={submitShare}
-              className="w-full py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white 
-                         rounded-xl font-medium hover:scale-105 transition transform"
+              className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-lg font-bold rounded-xl hover:opacity-90 transform hover:scale-105 transition"
             >
-              Send Email
+              Send via Email
             </button>
           </motion.div>
         </div>
