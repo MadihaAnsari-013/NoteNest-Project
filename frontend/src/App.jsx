@@ -1,7 +1,7 @@
 // src/App.jsx
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "react-router-dom";
-import Navbar from "./components/NavBar";
+import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
@@ -14,11 +14,11 @@ function App() {
 
   return (
     <NoteProvider>
-      <div className="relative min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-teal-900 overflow-hidden">
+      <div className="min-h-screen bg-black text-cyan-100">
         <ParticlesBG />
         <div className="relative z-10">
           <Navbar />
-          <main className="flex-1 container mx-auto p-4">
+          <main className="container mx-auto p-4 max-w-7xl">
             <AnimatePresence mode="wait">
               <Routes location={location} key={location.pathname}>
                 <Route path="/" element={<Home />} />
@@ -33,4 +33,4 @@ function App() {
   );
 }
 
-export default App;
+export default App;   // THIS LINE WAS MISSING!

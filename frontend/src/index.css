@@ -1,3 +1,60 @@
+/* BLACK + ELECTRIC BLUE THEME - CYBER MODE ACTIVATED */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --bg: #000000;
+  --primary: #00d9ff;
+  --primary-dark: #00aaff;
+  --card-bg: rgba(10, 15, 30, 0.7);
+  --border: rgba(0, 217, 255, 0.2);
+  ;
+  --text: #e0f7ff;
+  --text-muted: #88e1ff;
+}
+
+.dark {
+  background: #000000;
+  color: var(--text);
+}
+
+body {
+  background: linear-gradient(135deg, #000000 0%, #0a0e1a 50%, #001122 100%);
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Glassmorphism Cards */
+.glass {
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+}
+
+/* Inputs & Buttons */
+input, textarea {
+  @apply w-full px-5 py-4 rounded-xl bg-black/40 border border-cyan-500/30 
+         text-cyan-100 placeholder-cyan-300/50 
+         focus:outline-none focus:ring-4 focus:ring-cyan-500/50 
+         transition-all duration-300;
+}
+
+button {
+  @apply font-semibold transition-all duration-300 transform hover:scale-105;
+}
+
+/* Floating Button - GLOWING BLUE */
+.floating-btn {
+  background: linear-gradient(45deg, #00d9ff, #0077ff);
+  box-shadow: 0 0 30px rgba(0, 217, 255, 0.6);
+}
+
+/* Navbar */
+.navbar {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0, 217, 255, 0.3);
+}

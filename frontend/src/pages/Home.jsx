@@ -9,15 +9,14 @@ import BACKEND_URL from "../api/url";
 export default function Home() {
   const { notes, loading } = useContext(NoteContext);
 
-  // Share Modal State
+  // Share Modal
   const [shareModal, setShareModal] = useState(false);
   const [shareEmail, setShareEmail] = useState("");
   const [shareNoteId, setShareNoteId] = useState("");
 
-  // Search State
+  // Search
   const [search, setSearch] = useState("");
 
-  // Share Handler
   const handleShare = (id) => {
     setShareNoteId(id);
     setShareEmail("");
@@ -36,20 +35,15 @@ export default function Home() {
       setShareEmail("");
     } catch (err) {
       alert("Failed to share note.");
-      console.error(err);
     }
   };
 
-  // Check if same day
-  const isSameDay = (d1, d2) => {
-    return (
-      d1.getFullYear() === d2.getFullYear() &&
-      d1.getMonth() === d2.getMonth() &&
-      d1.getDate() === d2.getDate()
-    );
-  };
+  // Date Grouping
+  const isSameDay = (d1, d2) =>
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate();
 
-  // Group notes by date
   const groupNotesByDate = (notes) => {
     const groups = {};
     const today = new Date();
@@ -59,7 +53,6 @@ export default function Home() {
     notes.forEach((note) => {
       const noteDate = new Date(note.createdAt);
       let key;
-
       if (isSameDay(noteDate, today)) key = "Today";
       else if (isSameDay(noteDate, yesterday)) key = "Yesterday";
       else
@@ -72,11 +65,9 @@ export default function Home() {
       if (!groups[key]) groups[key] = [];
       groups[key].push(note);
     });
-
     return groups;
   };
 
-  // Filter notes by search
   const filteredNotes = notes.filter(
     (note) =>
       note.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -86,15 +77,12 @@ export default function Home() {
   // Loading State
   if (loading) {
     return (
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-8">
         {[...Array(8)].map((_, i) => (
-          <div
-            key={i}
-            className="bg-white/10 backdrop-blur-md rounded-2xl p-6 animate-pulse"
-          >
-            <div className="h-7 bg-white/20 rounded mb-4"></div>
-            <div className="h-4 bg-white/20 rounded w-5/6 mb-2"></div>
-            <div className="h-4 bg-white/20 rounded w-3/4"></div>
+          <div key={i} className="glass p-6 rounded-2xl animate-pulse">
+            <div className="h-7 bg-cyan-500/20 rounded mb-4"></div>
+            <div className="h-4 bg-cyan-500/10 rounded w-5/6 mb-2"></div>
+            <div className="h-4 bg-cyan-500/10 rounded w-3/4"></div>
           </div>
         ))}
       </div>
@@ -110,17 +98,17 @@ export default function Home() {
         className="flex flex-col items-center justify-center min-h-screen text-center px-6"
       >
         <motion.div
-          animate={{ y: [0, -15, 0] }}
-          transition={{ repeat: Infinity, duration: 2 }}
-          className="mb-8"
+          animate={{ y: [0, -20, 0] }}
+          transition={{ repeat: Infinity, duration: 3 }}
+          className="mb-10"
         >
-          <FileText size={100} className="text-blue-400" />
+          <FileText size={120} className="text-cyan-400" />
         </motion.div>
-        <h2 className="text-4xl font-bold text-white mb-4">Welcome to NoteNest</h2>
-        <p className="text-xl text-gray-300 mb-8">Your notes live here. Start creating!</p>
+        <h2 className="text-5xl font-bold text-cyan-300 mb-4">Welcome to NoteNest</h2>
+        <p className="text-xl text-cyan-200 mb-10">Your digital mind, beautifully organized.</p>
         <a
           href="/create"
-          className="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-lg font-semibold rounded-2xl shadow-xl hover:shadow-purple-500/50 transform hover:scale-105 transition"
+          className="px-10 py-5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-xl font-bold rounded-2xl shadow-2xl hover:shadow-cyan-500/80 transform hover:scale-110 transition"
         >
           Create Your First Note
         </a>
@@ -138,43 +126,29 @@ export default function Home() {
             placeholder="Search your notes..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full p-4 pr-14 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-4 focus:ring-purple-500/50 transition"
+            className="w-full px-6 py-5 pr-16 rounded-2xl bg-black/50 border border-cyan-500/40 text-cyan-100 placeholder-cyan-300/60 focus:outline-none focus:ring-4 focus:ring-cyan-500/60 transition-all"
           />
-          <svg
-            className="absolute right-5 top-1/2 -translate-y-1/2 w-7 h-7 text-white/60"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
+          <svg className="absolute right-6 top-1/2 -translate-y-1/2 w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
       </div>
 
-      {/* Notes Grid with Date Grouping */}
-      <div className="px-6 pb-24">
+      {/* Notes Grid */}
+      <div className="px-6 pb-32">
         {Object.entries(groupNotesByDate(filteredNotes)).map(([date, dateNotes]) => (
-          <div key={date} className="mb-12">
-            <h2 className="text-2xl font-bold text-purple-400 mb-6 px-2 border-l-4 border-purple-500">
+          <div key={date} className="mb-14">
+            <h2 className="text-2xl font-bold text-cyan-400 mb-8 px-3 border-l-4 border-cyan-500">
               {date}
-              {search && (
-                <span className="text-lg font-normal text-gray-400 ml-3">
-                  ({dateNotes.length} found)
-                </span>
-              )}
+              {search && <span className="text-cyan-200 text-lg ml-4">({dateNotes.length} found)</span>}
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-7">
               {dateNotes.map((note, i) => (
                 <motion.div
                   key={note._id}
-                  initial={{ opacity: 0, y: 30 }}
+                  initial={{ opacity: 0, y: 40 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.07 }}
+                  transition={{ delay: i * 0.08 }}
                 >
                   <Notecard note={note} onShare={handleShare} />
                 </motion.div>
@@ -183,62 +157,59 @@ export default function Home() {
           </div>
         ))}
 
-        {/* No Search No Results */}
         {search && filteredNotes.length === 0 && (
           <div className="text-center py-20">
-            <p className="text-2xl text-gray-400">
-              No notes found for "
-              <span className="text-purple-400 font-bold">{search}</span>"
+            <p className="text-3xl text-cyan-300">
+              No notes found for "<span className="text-white font-bold">{search}</span>"
             </p>
-            <p className="text-gray-500 mt-4">Try searching something else</p>
           </div>
         )}
       </div>
 
-      {/* FLOATING ADD BUTTON - THIS IS WHAT YOU WERE MISSING */}
-      <div className="fixed bottom-8 right-8 z-50">
+      {/* FLOATING ADD BUTTON - GLOWING CYBER BLUE */}
+      <div className="fixed bottom-10 right-10 z-50">
         <a
           href="/create"
-          className="group flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full shadow-2xl hover:shadow-pink-500/60 transform hover:scale-110 transition-all duration-300"
+          className="group flex h-16 w-16 items-center justify-center rounded-full 
+                     bg-gradient-to-br from-cyan-400 to-blue-700 
+                     shadow-2xl shadow-cyan-500/60 
+                     hover:shadow-cyan-400/80 
+                     transform hover:scale-110 hover:rotate-90 
+                     transition-all duration-500"
         >
-          <Plus className="w-9 h-9 text-white group-hover:rotate-90 transition-transform duration-500" />
+          <Plus className="h-9 w-9 text-white" />
         </a>
       </div>
 
       {/* Share Modal */}
       {shareModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-2xl w-full max-w-md"
+            className="glass p-8 rounded-3xl shadow-2xl w-full max-w-md border border-cyan-500/40"
           >
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-2xl font-bold flex items-center gap-3 text-gray-800 dark:text-white">
-                <Mail className="w-8 h-8 text-purple-500" />
+              <h3 className="text-2xl font-bold flex items-center gap-3 text-cyan-300">
+                <Mail className="w-8 h-8" />
                 Share Note
               </h3>
-              <button
-                onClick={() => setShareModal(false)}
-                className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition"
-              >
-                <X className="w-6 h-6" />
+              <button onClick={() => setShareModal(false)} className="p-2 hover:bg-white/10 rounded-full">
+                <X className="w-7 h-7 text-cyan-300" />
               </button>
             </div>
-
             <input
               type="email"
               placeholder="friend@example.com"
               value={shareEmail}
               onChange={(e) => setShareEmail(e.target.value)}
-              className="w-full px-5 py-4 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 focus:ring-4 focus:ring-purple-500 focus:outline-none mb-6 text-lg"
+              className="w-full px-6 py-4 rounded-xl bg-black/60 border border-cyan-500/50 text-cyan-100 placeholder-cyan-300/70 focus:outline-none focus:ring-4 focus:ring-cyan-500/60 mb-6"
             />
-
             <button
               onClick={submitShare}
-              className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-lg font-bold rounded-xl hover:opacity-90 transform hover:scale-105 transition"
+              className="w-full py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-cyan-500/60 transform hover:scale-105 transition"
             >
-              Send via Email
+              Send Email
             </button>
           </motion.div>
         </div>

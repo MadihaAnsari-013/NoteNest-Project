@@ -2,15 +2,15 @@
 import { useState, useContext } from "react";
 import { NoteContext } from "../context/NoteContext";
 import { useNavigate } from "react-router-dom";
+import { ArrowLeft, Plus } from "lucide-react";
 import BACKEND_URL from "../api/url";
-import { ArrowLeft } from "lucide-react";
 
 export default function Createnote() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { addNote, fetchNotes } = useContext(NoteContext); // fetchNotes is key!
+  const { fetchNotes } = useContext(NoteContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -19,64 +19,81 @@ export default function Createnote() {
 
     setLoading(true);
     try {
-      const newNote = { title, content, createdAt: new Date() };
-      await BACKEND_URL.post("/create-note", newNote);
-
-      // THIS LINE FIXES EVERYTHING
-      await fetchNotes(); // Re-fetch all notes from backend
-
-      navigate("/"); // Go back to home → note appears instantly!
-    } catch (error) {
-      alert("Failed to save note. Check console.");
-      console.error(error);
+      await BACKEND_URL.post("/create-note", { title, content });
+      await fetchNotes();
+      navigate("/");
+    } catch (err) {
+      alert("Failed to save note");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-teal-900 p-6">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-black text-cyan-100 flex flex-col items-center justify-start p-6 pt-16">
+      <div className="w-full max-w-lg">
+
+        {/* BACK TO NOTES BUTTON — CLEAR & BEAUTIFUL */}
         <button
           onClick={() => navigate("/")}
-          className="mb-6 flex items-center gap-2 text-white/80 hover:text-white transition"
+          className="mb-8 flex items-center gap-3 text-cyan-400 hover:text-cyan-300 transition font-medium text-lg"
         >
-          <ArrowLeft size={24} />
+          <ArrowLeft size={26} />
           Back to Notes
         </button>
 
-        <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
-          <h1 className="text-4xl font-bold text-white mb-8 text-center">Create New Note</h1>
+        {/* ULTRA-COMPACT CREATE CARD */}
+        <div className="glass p-7 rounded-3xl border border-cyan-500/30 shadow-2xl">
+          <h1 className="text-3xl font-bold text-cyan-300 mb-6 text-center">
+            New Note
+          </h1>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <input
-                type="text"
-                placeholder="Note Title..."
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-6 py-4 rounded-2xl bg-white/10 border border-white/30 text-white placeholder-white/50 text-xl focus:outline-none focus:ring-4 focus:ring-purple-500/50 transition"
-                required
-              />
-            </div>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Title */}
+            <input
+              type="text"
+              placeholder="Title..."
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full px-5 py-3.5 rounded-xl bg-black/50 border border-cyan-500/40 
+                         text-cyan-100 placeholder-cyan-300/60 text-lg font-medium
+                         focus:outline-none focus:ring-4 focus:ring-cyan-500/60 
+                         transition-all"
+              required
+            />
 
-            <div>
-              <textarea
-                placeholder="Write your note here..."
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                rows={12}
-                className="w-full px-6 py-4 rounded-2xl bg-white/10 border border-white/30 text-white placeholder-white/50 resize-none focus:ring-4 focus:ring-purple-500/50 transition"
-                required
-              />
-            </div>
+            {/* Content — Only 6 lines */}
+            <textarea
+              placeholder="Write your note..."
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              rows={6}
+              className="w-full px-5 py-4 rounded-xl bg-black/50 border border-cyan-500/40 
+                         text-cyan-100 placeholder-cyan-300/60 resize-none text-base
+                         focus:outline-none focus:ring-4 focus:ring-cyan-500/60 
+                         transition-all leading-snug"
+              required
+            />
 
+            {/* SAVE BUTTON — ALWAYS VISIBLE */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-5 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xl font-bold rounded-2xl shadow-xl hover:shadow-pink-500/50 transform hover:scale-105 transition disabled:opacity-70"
+              className="w-full py-4 bg-gradient-to-r from-cyan-500 to-blue-600 
+                         text-white text-lg font-bold rounded-xl 
+                         shadow-lg shadow-cyan-500/60 
+                         hover:shadow-cyan-400/80 transform hover:scale-105 
+                         transition-all duration-300 disabled:opacity-70 
+                         flex items-center justify-center gap-2.5"
             >
-              {loading ? "Saving..." : "Save Note"}
+              {loading ? (
+                "Saving..."
+              ) : (
+                <>
+                  <Plus size={26} />
+                  Save Note
+                </>
+              )}
             </button>
           </form>
         </div>
